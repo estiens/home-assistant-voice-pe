@@ -21,7 +21,7 @@ esphome:
   name: home-assistant-voice
   friendly_name: Home Assistant Voice
   name_add_mac_suffix: true
-  min_version: 2025.3.3
+  min_version: 2025.5.1
   on_boot:
     priority: 375
     then:
@@ -48,16 +48,22 @@ esphome:
 
 esp32:
   board: esp32-s3-devkitc-1
+  cpu_frequency: 240MHz
   variant: esp32s3
   flash_size: 16MB
   framework:
     type: esp-idf
     version: recommended
     sdkconfig_options:
-      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
       CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
       CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
       CONFIG_ESP32S3_INSTRUCTION_CACHE_32KB: "y"
+
+      # Moves instructions and read only data from flash into PSRAM on boot.
+      # Both enabled allows instructions to execute while a flash operation is in progress without needing to be placed in IRAM.
+      # Considerably speeds up mWW at the cost of using more PSRAM.
+      CONFIG_SPIRAM_RODATA: "y"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
 
       CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST: "y"
       CONFIG_BT_BLE_DYNAMIC_ENV_MEMORY: "y"
